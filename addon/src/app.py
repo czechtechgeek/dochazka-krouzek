@@ -160,6 +160,31 @@ def attendance(group_id):
     return render_template('attendance.html', group=group, children=children,
                            records=records, selected_date=d, datestr=datestr)
 
+@app.route('/attendance/<int:group_id>/bulk', methods=['POST'])
+def attendance_bulk(group_id):
+    group = Group.query.get_or_404(group_id)
+    datestr = request.args.get('date', '')
+    d = parse_date(datestr)
+    status = request.form.get('status', 'excused')
+
+    changes = 0
+    for child in group.children:
+        existing = Attendance.query.filter_by(child_id=child.id, date=d).first()
+        if existing:
+            if existing.status != status:
+                existing.status = status
+                changes += 1
+        else:
+            att = Attendance(child_id=child.id, date=d, status=status, group_id=group_id)
+            db.session.add(att)
+            changes += 1
+    db.session.commit()
+
+    labels = {'present': 'Přítomen', 'excused': 'Omluven', 'absent': 'Nepřítomen'}
+    if changes:
+        flash(f'Hromadně označeno {changes} dětí jako {labels.get(status, status)}', 'success')
+    return redirect(url_for('attendance', group_id=group_id, date=datestr if datestr else ''))
+
 @app.route('/export/<int:group_id>')
 def export(group_id):
     group = Group.query.get_or_404(group_id)
