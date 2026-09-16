@@ -19,9 +19,21 @@ class Child(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id'), nullable=False)
+    subgroup = db.Column(db.String(100), nullable=True, default=None)
 
     def __repr__(self):
         return self.name
+
+    def subgroups(children):
+        """Group children by subgroup, return list of (subgroup_name, [children])."""
+        from collections import OrderedDict
+        groups = OrderedDict()
+        for c in children:
+            sg = c.subgroup or ''
+            if sg not in groups:
+                groups[sg] = []
+            groups[sg].append(c)
+        return list(groups.items())
 
 class Attendance(db.Model):
     __tablename__ = 'attendance'

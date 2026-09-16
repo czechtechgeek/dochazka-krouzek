@@ -82,12 +82,21 @@ def manage():
         # Batch add children
         names_raw = request.form.get('names', '')
         group_id = request.form.get('group_id')
+        default_subgroup = request.form.get('subgroup', '')
         if group_id:
             group = Group.query.get(int(group_id))
             if group:
                 names = [n.strip() for n in names_raw.split('\n') if n.strip()]
-                for name in names:
-                    child = Child(name=name, group_id=group.id)
+                for entry in names:
+                    # Parse "Jméno | Podskupina" format
+                    if ' | ' in entry:
+                        parts = entry.split(' | ', 1)
+                        name = parts[0].strip()
+                        subgroup = parts[1].strip()
+                    else:
+                        name = entry
+                        subgroup = default_subgroup or None
+                    child = Child(name=name, group_id=group.id, subgroup=subgroup)
                     db.session.add(child)
                 db.session.commit()
                 flash(f'Přidáno {len(names)} dětí do skupiny "{group.name}"', 'success')

@@ -7,8 +7,10 @@
 <div class="children-list-group" style="margin-bottom: 20px;">
     <h3>{{ g.name }} ({{ g.children|length }})</h3>
     {% if g.children %}
+    {% for subgroup, subgroup_children in g.children|groupby('subgroup') %}
+    {% if subgroup %}<p style="font-size:.78rem;font-weight:600;color:var(--text-dim);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.04em;">{{ subgroup }}</p>{% endif %}
     <ul class="children-list">
-        {% for c in g.children %}
+        {% for c in subgroup_children %}
         {% set att = c.attendance_records %}
         {% set total = att|length %}
         {% set present = att|selectattr('status', 'equalto', 'present')|list|length %}
@@ -28,6 +30,7 @@
         </li>
         {% endfor %}
     </ul>
+        {% endfor %}
     {% else %}
     <p style="font-size:.85rem;color:var(--text-faint);padding:8px 14px;">Tato skupina nemá žádné děti.</p>
     {% endif %}

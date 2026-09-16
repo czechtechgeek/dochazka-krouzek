@@ -33,8 +33,10 @@
         <option value="{{ g.id }}">{{ g.name }} ({{ g.start_time }})</option>
         {% endfor %}
     </select>
-    <label for="names">Jména (každé na nový řádek):</label>
-    <textarea name="names" rows="10" placeholder="Anna Nováková&#10;Petr Svoboda&#10;..." required></textarea>
+    <label for="subgroup">Podskupina (volitelné — použije se pro všechna jména bez |):</label>
+    <input type="text" name="subgroup" placeholder="např. 4. třída / 5. třída" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.93rem;">
+    <label for="names">Jména (každé na nový řádek, po | lze uvést podskupinu):</label>
+    <textarea name="names" rows="10" placeholder="Anna Nováková | 4. třída&#10;Petr Svoboda | 4. třída&#10;Jana Malá | 5. třída&#10;..." required></textarea>
     <button type="submit" class="btn btn-primary">➕ Přidat děti</button>
 </form>
 
@@ -43,19 +45,22 @@
 <div class="children-list-group">
     <h3>{{ g.name }} ({{ g.children|length }})</h3>
     {% if g.children %}
+    {% for subgroup, children in g.children|groupby('subgroup') %}
+    {% if subgroup %}<p style="font-size:.78rem;font-weight:600;color:var(--text-dim);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.04em;">{{ subgroup }}</p>{% endif %}
     <ul class="children-list">
-        {% for c in g.children %}
-                <li>
-                    <span>{{ c.name }}</span>
-                    <div style="display:flex;gap:4px;">
-                        <a href="{{ url_for('stats_detail', child_id=c.id) }}" class="btn btn-outline btn-sm" style="font-size:.75rem;">📊</a>
-                        <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
-                            <button class="btn btn-danger btn-sm">🗑️</button>
-                        </form>
-                    </div>
-                </li>
-                {% endfor %}
+        {% for c in children %}
+        <li>
+            <span>{{ c.name }}</span>
+            <div style="display:flex;gap:4px;">
+                <a href="{{ url_for('stats_detail', child_id=c.id) }}" class="btn btn-outline btn-sm" style="font-size:.75rem;">📊</a>
+                <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
+                    <button class="btn btn-danger btn-sm">🗑️</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
     </ul>
+    {% endfor %}
     {% else %}
     <p style="font-size:.85rem;color:var(--text-faint);padding:8px 14px;">Zatím žádné děti v této skupině.</p>
     {% endif %}
