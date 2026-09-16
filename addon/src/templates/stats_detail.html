@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{{ child.name }} — statistika{% endblock %}
+{% block content %}
+<h1>📊 {{ child.name }}</h1>
+
+<div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+    <div style="background:var(--card);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow-sm);flex:1;min-width:100px;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--success);">{{ present }}</div>
+        <div style="font-size:.78rem;color:var(--text-dim);font-weight:500;">✅ Přítomen</div>
+    </div>
+    <div style="background:var(--card);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow-sm);flex:1;min-width:100px;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--warn);">{{ excused }}</div>
+        <div style="font-size:.78rem;color:var(--text-dim);font-weight:500;">📝 Omluven</div>
+    </div>
+    <div style="background:var(--card);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow-sm);flex:1;min-width:100px;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--danger);">{{ absent }}</div>
+        <div style="font-size:.78rem;color:var(--text-dim);font-weight:500;">❌ Nepřítomen</div>
+    </div>
+    <div style="background:var(--card);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow-sm);flex:1;min-width:100px;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:700;color:{% if pct >= 80 %}var(--success){% elif pct >= 50 %}var(--warn){% else %}var(--danger){% endif %};">{{ pct }}%</div>
+        <div style="font-size:.78rem;color:var(--text-dim);font-weight:500;">🟢 Docházka</div>
+    </div>
+</div>
+
+{% if records %}
+<table class="export-table">
+    <thead>
+        <tr><th>Datum</th><th>Stav</th></tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r.date.strftime('%d. %m. %Y') }}</td>
+            <td>
+                {% if r.status == 'present' %}✅ Přítomen
+                {% elif r.status == 'excused' %}📝 Omluven
+                {% else %}❌ Nepřítomen{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color:var(--text-dim);padding:20px 0;">Žádné záznamy docházky.</p>
+{% endif %}
+
+<p style="margin-top:16px;">
+    <a href="{{ url_for('stats_overview') }}" class="btn btn-outline">← Zpět na přehled</a>
+    <a href="{{ url_for('manage') }}" class="btn btn-outline">⚙️ Správa</a>
+</p>
+{% endblock %}

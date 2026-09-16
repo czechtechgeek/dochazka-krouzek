@@ -285,6 +285,26 @@ def summary_data():
 
     return jsonify(sorted(data.values(), key=lambda x: x['date']))
 
+# ── INDIVIDUAL STATS ──────────────────────────────
+
+@app.route('/stats')
+def stats_overview():
+    groups = Group.query.order_by(Group.sort_order).all()
+    return render_template('stats.html', groups=groups, today=today())
+
+@app.route('/stats/<int:child_id>')
+def stats_detail(child_id):
+    child = Child.query.get_or_404(child_id)
+    records = Attendance.query.filter_by(child_id=child_id).order_by(Attendance.date.desc()).all()
+    present = sum(1 for r in records if r.status == 'present')
+    excused = sum(1 for r in records if r.status == 'excused')
+    absent = sum(1 for r in records if r.status == 'absent')
+    total = len(records)
+    pct = round(present / total * 100) if total else 0
+    return render_template('stats_detail.html', child=child, records=records,
+                           present=present, excused=excused, absent=absent,
+                           total=total, pct=pct)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT, debug=True)

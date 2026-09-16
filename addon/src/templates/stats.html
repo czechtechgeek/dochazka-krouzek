@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Statistiky jednotlivců{% endblock %}
+{% block content %}
+<h1>📊 Statistiky jednotlivců</h1>
+
+{% for g in groups %}
+<div class="children-list-group" style="margin-bottom: 20px;">
+    <h3>{{ g.name }} ({{ g.children|length }})</h3>
+    {% if g.children %}
+    <ul class="children-list">
+        {% for c in g.children %}
+        {% set att = c.attendance_records %}
+        {% set total = att|length %}
+        {% set present = att|selectattr('status', 'equalto', 'present')|list|length %}
+        {% set pct = (present / total * 100)|round if total > 0 else 0 %}
+        <li>
+            <a href="{{ url_for('stats_detail', child_id=c.id) }}" style="text-decoration:none;color:inherit;flex:1;display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                <span style="font-weight:600;">{{ c.name }}</span>
+                <span style="font-size:.82rem;color:var(--text-dim);">
+                    {% if total > 0 %}
+                    ✅ {{ present }} / 📝 {{ att|selectattr('status', 'equalto', 'excused')|list|length }} / ❌ {{ att|selectattr('status', 'equalto', 'absent')|list|length }}
+                    · <strong style="color:{% if pct >= 80 %}var(--success){% elif pct >= 50 %}var(--warn){% else %}var(--danger){% endif %}">{{ pct }}%</strong>
+                    {% else %}
+                    <span style="color:var(--text-faint)">— žádné záznamy</span>
+                    {% endif %}
+                </span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p style="font-size:.85rem;color:var(--text-faint);padding:8px 14px;">Tato skupina nemá žádné děti.</p>
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

@@ -45,13 +45,16 @@
     {% if g.children %}
     <ul class="children-list">
         {% for c in g.children %}
-        <li>
-            <span>{{ c.name }}</span>
-            <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
-                <button class="btn btn-danger btn-sm">🗑️</button>
-            </form>
-        </li>
-        {% endfor %}
+                <li>
+                    <span>{{ c.name }}</span>
+                    <div style="display:flex;gap:4px;">
+                        <a href="{{ url_for('stats_detail', child_id=c.id) }}" class="btn btn-outline btn-sm" style="font-size:.75rem;">📊</a>
+                        <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
+                            <button class="btn btn-danger btn-sm">🗑️</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
     </ul>
     {% else %}
     <p style="font-size:.85rem;color:var(--text-faint);padding:8px 14px;">Zatím žádné děti v této skupině.</p>
