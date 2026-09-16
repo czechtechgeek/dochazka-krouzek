@@ -1,26 +1,26 @@
 # Docházkový systém pro kroužek
 
-Mobile-first Flask app pro správu docházky. Optimalizovaná pro mobil, podpora PWA (instalace na plochu). Možnost exportu do HTML (PDF) a XML.
+Mobile-first Flask app pro správu docházky v kroužku. Optimalizovaná pro mobil, podpora PWA (instalace na plochu telefonu). Export do HTML (tisk → PDF) a XML.
 
 ## Home Assistant add-on
 
-Repo je zároveň HA add-on — přidej ho v Supervisor → Add-on Store → Repositories:
+Přidej repo v **Supervisor → Add-on Store → tři tečky → Repositories**:
 
 ```
 https://github.com/czechtechgeek/dochazka-krouzek
 ```
 
-Po instalaci se v sidebaru objeví položka "Docházka". HA řeší auth i remote přístup.
+HA automaticky najde add-on v `addon/` adresáři. Po instalaci se v sidebaru objeví **📋 Docházka**.
 
-### Architektura add-onu
-
-- **Ingress** — HA proxy, funguje lokálně i vzdáleně
-- **Auth** — přes HA účet, žádná extra přihlášení
-- **Data** — SQLite v `/config/dochazka.db` (persistentní)
+**Výhody:**
+- **Ingress** — funguje lokálně i vzdáleně (HA proxy)
+- **Auth** — přes HA účet, nic extra
+- **Data** — SQLite v `/config/dochazka.db` (přes restart)
 
 ## Samostatné spuštění (bez HA)
 
 ```bash
+cd addon
 pip install Flask Flask-SQLAlchemy
 python3 src/app.py
 # → http://localhost:9120
@@ -28,31 +28,35 @@ python3 src/app.py
 
 ## Použití
 
-1. **Nastavení** → vytvoř skupinu (např. "12:30 — 26 dětí")
-2. **Přidat děti** → hromadně vložit jména, každé na nový řádek
-3. **Docházka** → vyber skupinu → datum (default dnes) → odklepávej stavy
-4. **Export** → HTML (Print → PDF) nebo XML
+1. **⚙️ Nastavení** → vytvoř skupinu (např. "12:30 — 26 dětí")
+2. **➕ Přidat děti** → hromadně vložit jména, každé na nový řádek
+3. **📝 Docházka** → vyber skupinu → datum (default dnes) → odklepávej stavy
+4. **🖨️ Export** → HTML (Print → PDF) nebo XML
 
-## Stavy
+### Stavy
 
-| Stav | Tlačítko | Význam |
-|------|----------|--------|
-| ✅ | Přítomen | Dítě je přítomno |
-| 📝 | Omluven | Dítě se omluvilo předem |
-| ❌ | Nepřítomen | Dítě nepřišlo bez omluvy |
+✅ **Přítomen** — dítě je přítomno  
+📝 **Omluven** — omluveno předem  
+❌ **Nepřítomen** — nepřišlo bez omluvy
+
+### PWA
+
+Appku jde nainstalovat na plochu mobilu (Android i iOS). Stačí v prohlížeči "Přidat na plochu".
 
 ## Struktura
 
 ```
-├── config.yaml          # HA add-on metadata
-├── Dockerfile           # HA add-on image
-├── run.sh               # HA add-on start script
-├── src/
-│   ├── app.py           # Flask server
-│   ├── models.py        # DB modely (Group, Child, Attendance)
-│   ├── static/          # CSS + PWA
-│   ├── templates/       # Jinja2 šablony
-│   └── requirements.txt
+├── addon/
+│   ├── config.yaml       # HA add-on metadata
+│   ├── Dockerfile        # HA add-on image
+│   ├── run.sh            # start script
+│   └── src/
+│       ├── app.py        # Flask server
+│       ├── models.py     # DB modely
+│       ├── static/       # CSS + PWA
+│       ├── templates/    # Jinja2 šablony
+│       └── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
