@@ -8,8 +8,10 @@ from models import db, Group, Child, Attendance
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dochazka.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLITE_URL', 'sqlite:///dochazka.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+PORT = int(os.environ.get('PORT', 9120))
 
 db.init_app(app)
 
@@ -285,4 +287,4 @@ def summary_data():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=9120, debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=True)

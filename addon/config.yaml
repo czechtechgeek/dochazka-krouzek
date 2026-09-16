@@ -1,0 +1,23 @@
+name: "Docházka kroužek"
+version: "1.0.0"
+slug: "dochazka"
+description: "Správa docházky v kroužku — mobile-first Flask app s PWA"
+url: "https://github.com/czechtechgeek/dochazka-krouzek"
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+ingress: true
+ingress_port: 9120
+panel_icon: mdi:clipboard-list
+ports:
+  9120/tcp: 9120
+ports_description:
+  9120/tcp: Flask server
+map:
+  - config:rw
+options: {}
+schema: {}
