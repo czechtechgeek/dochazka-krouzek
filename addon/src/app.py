@@ -11,18 +11,9 @@ app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLITE_URL', 'sqlite:///dochazka.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# HA ingress path handling
-@app.before_request
-def handle_ingress_path():
-    """Set SCRIPT_NAME from HA ingress headers so url_for() generates correct paths."""
-    pfx = request.headers.get('X-Ingress-Path') or \
-          request.headers.get('X-Forwarded-Prefix', '')
-    if pfx:
-        request.environ['SCRIPT_NAME'] = pfx
-
-# Keep ProxyFix for standard proxy headers (X-Forwarded-For, X-Forwarded-Proto)
+# Proxy fix for standard headers (X-Forwarded-For, X-Forwarded-Proto)
 from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_prefix=1)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 PORT = int(os.environ.get('PORT', 9120))
 
