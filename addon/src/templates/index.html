@@ -14,7 +14,7 @@
 {% if not groups %}
 <div class="empty-state">
     <p>Zatím nejsou vytvořeny žádné skupiny.</p>
-    <a href="/manage" class="btn btn-primary">➕ Vytvořit skupiny a přidat děti</a>
+    <a href="{{ url_for('manage') }}" class="btn btn-primary">➕ Vytvořit skupiny a přidat děti</a>
 </div>
 {% endif %}
 

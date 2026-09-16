@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#2563eb">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <link rel="manifest" href="{{ url_for('manifest') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
     <title>{% block title %}Docházka{% endblock %}</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body>
     <nav class="nav">
         <div class="nav-inner">
-            <a href="/" class="nav-brand">📋 Docházka</a>
+            <a href="{{ url_for('index') }}" class="nav-brand">📋 Docházka</a>
             <div class="nav-links">
-                <a href="/">🏠</a>
-                <a href="/manage">⚙️</a>
-                <a href="/stats">👤</a>
-                <a href="/summary">📊</a>
+                <a href="{{ url_for('index') }}">🏠</a>
+                <a href="{{ url_for('manage') }}">⚙️</a>
+                <a href="{{ url_for('stats_overview') }}">👤</a>
+                <a href="{{ url_for('summary') }}">📊</a>
             </div>
         </div>
     </nav>
@@ -36,7 +36,7 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js');
+            navigator.serviceWorker.register('{{ url_for('static', filename='service-worker.js') }}');
         }
     </script>
     {% block scripts %}{% endblock %}

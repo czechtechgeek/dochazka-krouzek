@@ -11,6 +11,10 @@ app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLITE_URL', 'sqlite:///dochazka.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Trust HA ingress proxy headers
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_prefix=1)
+
 PORT = int(os.environ.get('PORT', 9120))
 
 db.init_app(app)

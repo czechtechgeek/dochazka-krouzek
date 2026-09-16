@@ -4,7 +4,7 @@
 <h1>⚙️ Správa</h1>
 
 <h2>Skupiny</h2>
-<form method="post" action="/group/add" class="inline-form">
+<form method="post" action="{{ url_for('add_group') }}" class="inline-form">
     <input type="text" name="name" placeholder="Název skupiny (např. 12:30)" required>
     <input type="time" name="start_time" value="12:30" required>
     <button type="submit" class="btn btn-primary">➕ Přidat skupinu</button>

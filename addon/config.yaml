@@ -1,5 +1,5 @@
 name: "Docházka kroužek"
-version: "1.0.1"
+version: "1.0.2"
 slug: "dochazka"
 description: "Správa docházky v kroužku — mobile-first Flask app s PWA"
 url: "https://github.com/czechtechgeek/dochazka-krouzek"
