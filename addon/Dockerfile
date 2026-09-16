@@ -9,9 +9,6 @@ ENV PYTHONUNBUFFERED=1
 COPY src/requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY src/gen_icons.py .
-RUN python3 gen_icons.py
-
 COPY src/app.py src/models.py ./
 COPY src/templates/ templates/
 COPY src/static/ static/
