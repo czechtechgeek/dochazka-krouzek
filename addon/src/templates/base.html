@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
     <title>{% block title %}Docházka{% endblock %}</title>
-    <script>!function(){var p=window.location.pathname,i=p.indexOf("/api/hassio_ingress/");if(i>=0){var e=p.indexOf("/",i+20);if(e>0){var b=p.substring(0,e+1),n=document.createElement("base");n.href=b,document.head.insertBefore(n,document.head.firstChild)}}}()</script>
+    <script>!function(){var p=window.location.pathname,i=p.indexOf("/api/hassio_ingress/");if(i>=0){var e=document,base=p.substring(0,p.indexOf("/",i+20)+1),fixPath=function(h){return h==="/"?base:base+h.substring(1)};e.addEventListener("DOMContentLoaded",function(){e.querySelectorAll('a[href^="/"]').forEach(function(a){if(!a.href.includes(base))a.href=fixPath(a.getAttribute("href"))});e.querySelectorAll('form[action^="/"]').forEach(function(f){f.action=fixPath(f.getAttribute("action"))});e.querySelectorAll('button[formaction^="/"]').forEach(function(b){b.setAttribute("formaction",fixPath(b.getAttribute("formaction")))})})}}()</script>
     <style>
 :root{--accent:#2b6b5c;--accent-light:#3b8d7a;--accent-dark:#1f5246;--accent-glow:rgba(43,107,92,.08);--success:#2d7d4f;--success-bg:#e6f4ea;--warn:#b6842a;--warn-bg:#fef7e6;--danger:#c1433a;--danger-bg:#fce8e6;--bg:#f3f0eb;--card:#fefcf9;--text:#1f1c19;--text-dim:#7a7270;--text-faint:#b0a8a4;--border:#e3ddd7;--radius-sm:8px;--radius:14px;--radius-lg:20px;--shadow-sm:0 1px 3px rgba(31,28,25,.06),0 1px 2px rgba(31,28,25,.04);--shadow:0 2px 8px rgba(31,28,25,.06),0 4px 16px rgba(31,28,25,.04);--shadow-lg:0 8px 24px rgba(31,28,25,.08)}
 *{box-sizing:border-box;margin:0;padding:0}
