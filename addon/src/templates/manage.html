@@ -10,12 +10,12 @@
     <button type="submit" class="btn btn-primary">➕ Přidat skupinu</button>
 </form>
 
-<div class="groups-list">
+<div class="groups-manage" id="groups-list">
     {% for g in groups %}
-    <div class="group-item">
+    <div class="group-manage-item">
         <div>
-            <strong>{{ g.name }}</strong> ({{ g.start_time }}) —
-            <span class="child-count">{{ g.children|length }} dětí</span>
+            <span class="group-manage-name">{{ g.name }}</span>
+            <span class="child-count-badge"> ({{ g.start_time }}) — {{ g.children|length }} dětí</span>
         </div>
         <form method="post" action="{{ url_for('delete_group', group_id=g.id) }}" onsubmit="return confirm('Smazat skupinu i všechny děti?')">
             <button class="btn btn-danger btn-sm">🗑️</button>
@@ -38,18 +38,25 @@
     <button type="submit" class="btn btn-primary">➕ Přidat děti</button>
 </form>
 
-<h2>Seznam dětí</h2>
+<div class="children-list-section">
 {% for g in groups %}
-<h3>{{ g.name }} ({{ g.children|length }})</h3>
-<ul class="children-list">
-    {% for c in g.children %}
-    <li>
-        <span>{{ c.name }}</span>
-        <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
-            <button class="btn btn-danger btn-sm">🗑️</button>
-        </form>
-    </li>
-    {% endfor %}
-</ul>
+<div class="children-list-group">
+    <h3>{{ g.name }} ({{ g.children|length }})</h3>
+    {% if g.children %}
+    <ul class="children-list">
+        {% for c in g.children %}
+        <li>
+            <span>{{ c.name }}</span>
+            <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
+                <button class="btn btn-danger btn-sm">🗑️</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p style="font-size:.85rem;color:var(--text-faint);padding:8px 14px;">Zatím žádné děti v této skupině.</p>
+    {% endif %}
+</div>
 {% endfor %}
+</div>
 {% endblock %}

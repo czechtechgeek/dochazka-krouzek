@@ -6,6 +6,9 @@
     <label>Datum:
         <input type="date" name="date" value="{{ today.isoformat() }}" onchange="this.form.submit()">
     </label>
+    {% if not request.args.date %}
+    <span class="date-badge">🏳️ Dnes</span>
+    {% endif %}
 </form>
 
 {% if not groups %}
@@ -14,6 +17,8 @@
     <a href="/manage" class="btn btn-primary">➕ Vytvořit skupiny a přidat děti</a>
 </div>
 {% endif %}
+
+<p class="section-title">Skupiny</p>
 
 <div class="groups-grid">
     {% for g in groups %}
@@ -29,7 +34,7 @@
             <span class="stat stat-total">👥 {{ s.total }}</span>
         </div>
         {% if s.attended > 0 %}
-        <div class="progress-bar">
+        <div class="progress-track">
             <div class="progress-fill" style="width: {{ (s.present / s.total * 100)|round }}%"></div>
         </div>
         {% endif %}
