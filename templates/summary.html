@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Souhrn docházky{% endblock %}
+{% block content %}
+<h1>📊 Souhrn docházky</h1>
+
+<form method="get" action="/summary/data" class="filter-form" id="summary-form">
+    <label>Od: <input type="date" name="from" value="{{ today.isoformat() }}"></label>
+    <label>Do: <input type="date" name="to" value="{{ today.isoformat() }}"></label>
+    <label>Skupina:
+        <select name="group_id">
+            <option value="">Všechny</option>
+            {% for g in groups %}
+            <option value="{{ g.id }}">{{ g.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <button type="submit" class="btn btn-primary">Zobrazit</button>
+</form>
+
+<div id="summary-results"></div>
+
+<script>
+document.getElementById('summary-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const url = form.action + '?' + new URLSearchParams(new FormData(form));
+    const res = await fetch(url);
+    const data = await res.json();
+    const div = document.getElementById('summary-results');
+    if (!data.length) {
+        div.innerHTML = '<p>Žádná data.</p>';
+        return;
+    }
+    let html = '<table class="export-table"><thead><tr><th>Datum</th><th>Skupina</th><th>✅ Přítomno</th><th>📝 Omluveno</th><th>❌ Nepřítomno</th><th>Celkem</th></tr></thead><tbody>';
+    for (const row of data) {
+        html += `<tr><td>${row.date}</td><td>${row.group_name}</td><td>${row.present}</td><td>${row.excused}</td><td>${row.absent}</td><td>${row.total}</td></tr>`;
+    }
+    html += '</tbody></table>';
+    div.innerHTML = html;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Docházka — {{ group.name }}{% endblock %}
+{% block content %}
+<h1>📝 {{ group.name }} <small>{{ group.start_time }}</small></h1>
+
+<form method="get" action="" class="date-picker" id="date-form">
+    <label>Datum:
+        <input type="date" name="date" value="{{ selected_date.isoformat() }}" onchange="this.form.submit()">
+    </label>
+    {% if not datestr %}
+    <span class="date-badge">🏳️ Dnešek</span>
+    {% endif %}
+</form>
+
+<form method="post" id="attendance-form">
+    <div class="attendance-list">
+        {% for child in children %}
+        <div class="attendance-row" data-child-id="{{ child.id }}">
+            <span class="child-name">{{ child.name }}</span>
+            <div class="status-buttons">
+                {% set cur = records.get(child.id, 'none') %}
+                <button type="submit" name="child_{{ child.id }}" value="present"
+                        class="btn-status btn-present {% if cur == 'present' %}active{% endif %}"
+                        formaction="{{ url_for('attendance', group_id=group.id, date=datestr) }}">✅ Přítomen</button>
+                <button type="submit" name="child_{{ child.id }}" value="excused"
+                        class="btn-status btn-excused {% if cur == 'excused' %}active{% endif %}"
+                        formaction="{{ url_for('attendance', group_id=group.id, date=datestr) }}">📝 Omluven</button>
+                <button type="submit" name="child_{{ child.id }}" value="absent"
+                        class="btn-status btn-absent {% if cur == 'absent' %}active{% endif %}"
+                        formaction="{{ url_for('attendance', group_id=group.id, date=datestr) }}">❌ Nepřít.</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if children %}
+    <div class="fixed-bar">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Uložit všechny změny</button>
+    </div>
+    {% endif %}
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+// Quick-tap: single-click marks without form reload
+document.querySelectorAll('.btn-status').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        // Let the form submit normally for now (reliable, works offline)
+    });
+});
+</script>
+{% endblock %}

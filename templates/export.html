@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Export — {{ group.name }}{% endblock %}
+{% block head %}
+<style>
+    @media print {
+        .nav, .fixed-bar, .btn, .flash, .date-picker { display: none !important; }
+        body { background: white; font-size: 12pt; }
+        .container { max-width: 100%; padding: 0; }
+        @page { margin: 15mm; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>🖨️ {{ group.name }} <small>{{ date.strftime('%d. %m. %Y') }}</small></h1>
+
+<p>
+    <button onclick="window.print()" class="btn btn-primary">🖨️ Tisknout / Uložit PDF</button>
+    <a href="{{ url_for('export', group_id=group.id, date=request.args.date, format='xml') }}" class="btn btn-outline">📄 XML</a>
+</p>
+
+<table class="export-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Jméno</th>
+            <th>Stav</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set present = namespace(count=0) %}
+        {% set excused = namespace(count=0) %}
+        {% set absent = namespace(count=0) %}
+        {% for child in children %}
+        {% set status = records.get(child.id, 'nevyplněno') %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ child.name }}</td>
+            <td>
+                {% if status == 'present' %}✅ Přítomen{% set present.count = present.count + 1 %}
+                {% elif status == 'excused' %}📝 Omluven{% set excused.count = excused.count + 1 %}
+                {% elif status == 'absent' %}❌ Nepřítomen{% set absent.count = absent.count + 1 %}
+                {% else %}➖{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="export-summary">
+    <p>Celkem: <strong>{{ children|length }}</strong></p>
+    <p>✅ Přítomno: <strong>{{ present.count }}</strong></p>
+    <p>📝 Omluveno: <strong>{{ excused.count }}</strong></p>
+    <p>❌ Nepřítomno: <strong>{{ absent.count }}</strong></p>
+    <p><small>Vygenerováno: {{ now().strftime('%d. %m. %Y %H:%M') }}</small></p>
+</div>
+{% endblock %}

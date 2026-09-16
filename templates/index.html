@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>📋 Docházka — {{ today.strftime('%d. %m. %Y') }}</h1>
+
+<form method="get" action="/" class="date-picker" id="date-form">
+    <label>Datum:
+        <input type="date" name="date" value="{{ today.isoformat() }}" onchange="this.form.submit()">
+    </label>
+</form>
+
+{% if not groups %}
+<div class="empty-state">
+    <p>Zatím nejsou vytvořeny žádné skupiny.</p>
+    <a href="/manage" class="btn btn-primary">➕ Vytvořit skupiny a přidat děti</a>
+</div>
+{% endif %}
+
+<div class="groups-grid">
+    {% for g in groups %}
+    <div class="group-card">
+        <div class="group-header">
+            <h2>{{ g.name }}</h2>
+            <span class="group-time">{{ g.start_time }}</span>
+        </div>
+        <div class="group-stats">
+            {% set s = summary[g.id] %}
+            <span class="stat stat-ok">✅ {{ s.present }}</span>
+            <span class="stat stat-mid">❌ {{ s.total - s.attended }}</span>
+            <span class="stat stat-total">👥 {{ s.total }}</span>
+        </div>
+        {% if s.attended > 0 %}
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ (s.present / s.total * 100)|round }}%"></div>
+        </div>
+        {% endif %}
+        <div class="group-actions">
+            <a href="{{ url_for('attendance', group_id=g.id, date=request.args.date) }}" class="btn btn-primary">
+                📝 Zapsat docházku
+            </a>
+            <a href="{{ url_for('export', group_id=g.id, date=request.args.date) }}" class="btn btn-outline">
+                🖨️ Export
+            </a>
+            <a href="{{ url_for('export', group_id=g.id, date=request.args.date, format='xml') }}" class="btn btn-outline">
+                📄 XML
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

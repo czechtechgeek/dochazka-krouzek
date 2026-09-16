@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Správa dětí a skupin{% endblock %}
+{% block content %}
+<h1>⚙️ Správa</h1>
+
+<h2>Skupiny</h2>
+<form method="post" action="/group/add" class="inline-form">
+    <input type="text" name="name" placeholder="Název skupiny (např. 12:30)" required>
+    <input type="time" name="start_time" value="12:30" required>
+    <button type="submit" class="btn btn-primary">➕ Přidat skupinu</button>
+</form>
+
+<div class="groups-list">
+    {% for g in groups %}
+    <div class="group-item">
+        <div>
+            <strong>{{ g.name }}</strong> ({{ g.start_time }}) —
+            <span class="child-count">{{ g.children|length }} dětí</span>
+        </div>
+        <form method="post" action="{{ url_for('delete_group', group_id=g.id) }}" onsubmit="return confirm('Smazat skupinu i všechny děti?')">
+            <button class="btn btn-danger btn-sm">🗑️</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<h2>Přidat děti</h2>
+<form method="post" class="batch-form">
+    <label for="group_id">Skupina:</label>
+    <select name="group_id" required>
+        <option value="">— vyber —</option>
+        {% for g in groups %}
+        <option value="{{ g.id }}">{{ g.name }} ({{ g.start_time }})</option>
+        {% endfor %}
+    </select>
+    <label for="names">Jména (každé na nový řádek):</label>
+    <textarea name="names" rows="10" placeholder="Anna Nováková&#10;Petr Svoboda&#10;..." required></textarea>
+    <button type="submit" class="btn btn-primary">➕ Přidat děti</button>
+</form>
+
+<h2>Seznam dětí</h2>
+{% for g in groups %}
+<h3>{{ g.name }} ({{ g.children|length }})</h3>
+<ul class="children-list">
+    {% for c in g.children %}
+    <li>
+        <span>{{ c.name }}</span>
+        <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
+            <button class="btn btn-danger btn-sm">🗑️</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endfor %}
+{% endblock %}
