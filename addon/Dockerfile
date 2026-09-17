@@ -5,6 +5,7 @@ WORKDIR /app
 ENV SQLITE_URL="sqlite:////config/dochazka.db"
 ENV PORT=9120
 ENV PYTHONUNBUFFERED=1
+ENV INGRESS_BASE=/api/hassio_ingress/dochazka
 
 RUN mkdir -p /config
 

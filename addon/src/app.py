@@ -15,6 +15,27 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
+# HA ingress: rewrite absolute paths in HTML to include ingress prefix
+import re
+INGRESS_BASE = os.environ.get('INGRESS_BASE', '')
+
+@app.after_request
+def fix_ingress_paths(response):
+    if response.content_type and 'text/html' in response.content_type:
+        # Try header first, then env var fallback
+        pfx = request.headers.get('X-Ingress-Path') or \
+              request.headers.get('X-Forwarded-Prefix') or \
+              INGRESS_BASE
+        if pfx:
+            rstrip = pfx.rstrip('/')
+            html = response.get_data(as_text=True)
+            html = html.replace('href="/', f'href="{rstrip}/')
+            html = html.replace('action="/', f'action="{rstrip}/')
+            html = html.replace(f"href='{rstrip}/", "href='/")  # prevent double-prefix
+            html = html.replace(f"action='{rstrip}/", "action='/")
+            response.set_data(html)
+    return response
+
 PORT = int(os.environ.get('PORT', 9120))
 
 db.init_app(app)
