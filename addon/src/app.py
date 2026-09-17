@@ -46,6 +46,17 @@ def inject_now():
 
 with app.app_context():
     db.create_all()
+    # Migrate: add subgroup column if missing
+    try:
+        import sqlalchemy as sa
+        insp = sa.inspect(db.engine)
+        cols = [c['name'] for c in insp.get_columns('children')]
+        if 'subgroup' not in cols:
+            with db.engine.connect() as conn:
+                conn.execute(sa.text('ALTER TABLE children ADD COLUMN subgroup VARCHAR(100)'))
+                conn.commit()
+    except Exception:
+        pass  # table might not exist yet
 
 # ── PWA ──────────────────────────────────────────
 
