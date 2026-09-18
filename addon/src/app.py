@@ -21,19 +21,22 @@ INGRESS_BASE = os.environ.get('INGRESS_BASE', '')
 
 @app.after_request
 def fix_ingress_paths(response):
+    pfx = request.headers.get('X-Ingress-Path') or \
+          request.headers.get('X-Forwarded-Prefix') or \
+          INGRESS_BASE
+    if not pfx:
+        return response
+    rstrip = pfx.rstrip('/')
+    # Fix redirect Location header (302/303)
+    loc = response.headers.get('Location', '')
+    if loc.startswith('/') and not loc.startswith(f'{rstrip}/'):
+        response.headers['Location'] = f'{rstrip}{loc}'
+    # Fix HTML content (href/action)
     if response.content_type and 'text/html' in response.content_type:
-        # Try header first, then env var fallback
-        pfx = request.headers.get('X-Ingress-Path') or \
-              request.headers.get('X-Forwarded-Prefix') or \
-              INGRESS_BASE
-        if pfx:
-            rstrip = pfx.rstrip('/')
-            html = response.get_data(as_text=True)
-            html = html.replace('href="/', f'href="{rstrip}/')
-            html = html.replace('action="/', f'action="{rstrip}/')
-            html = html.replace(f"href='{rstrip}/", "href='/")  # prevent double-prefix
-            html = html.replace(f"action='{rstrip}/", "action='/")
-            response.set_data(html)
+        html = response.get_data(as_text=True)
+        html = html.replace('href="/', f'href="{rstrip}/')
+        html = html.replace('action="/', f'action="{rstrip}/')
+        response.set_data(html)
     return response
 
 PORT = int(os.environ.get('PORT', 9120))
