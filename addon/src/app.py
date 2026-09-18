@@ -110,13 +110,14 @@ def parse_date(datestr):
 @app.route('/')
 def index():
     groups = Group.query.order_by(Group.sort_order).all()
-    d = today()
+    d = parse_date(request.args.get('date'))
     summary = {}
     for g in groups:
         present = Attendance.query.filter_by(date=d, group_id=g.id, status='present').count()
+        excused = Attendance.query.filter_by(date=d, group_id=g.id, status='excused').count()
         total = len(g.children)
         attended = Attendance.query.filter_by(date=d, group_id=g.id).count()
-        summary[g.id] = {'present': present, 'total': total, 'attended': attended}
+        summary[g.id] = {'present': present, 'excused': excused, 'total': total, 'attended': attended}
     return render_template('index.html', groups=groups, today=d, summary=summary)
 
 @app.route('/manage', methods=['GET', 'POST'])

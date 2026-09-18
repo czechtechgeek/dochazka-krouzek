@@ -2,7 +2,7 @@
 {% block content %}
 <h1>📋 Docházka — {{ today.strftime('%d. %m. %Y') }}</h1>
 
-<form method="get" action="/" class="date-picker" id="date-form">
+<form method="get" action="" class="date-picker" id="date-form">
     <label>Datum:
         <input type="date" name="date" value="{{ today.isoformat() }}" onchange="this.form.submit()">
     </label>
@@ -22,20 +22,25 @@
 
 <div class="groups-grid">
     {% for g in groups %}
-    <div class="group-card">
+    {% set s = summary[g.id] %}
+    {% set all_done = s.total > 0 and s.attended == s.total %}
+    <div class="group-card" style="border-color:{% if s.total > 0 %}{% if all_done %}var(--success){% else %}var(--danger){% endif %}{% else %}var(--border){% endif %};">
         <div class="group-header">
             <h2>{{ g.name }}</h2>
             <span class="group-time">{{ g.start_time }}</span>
         </div>
         <div class="group-stats">
-            {% set s = summary[g.id] %}
             <span class="stat stat-ok">✅ {{ s.present }}</span>
+            <span class="stat stat-mid">📝 {{ s.excused }}</span>
             <span class="stat stat-mid">❌ {{ s.total - s.attended }}</span>
             <span class="stat stat-total">👥 {{ s.total }}</span>
         </div>
-        {% if s.attended > 0 %}
+        {% if s.total > 0 %}
         <div class="progress-track">
-            <div class="progress-fill" style="width: {{ (s.present / s.total * 100)|round }}%"></div>
+            <div class="progress-fill" style="width: {{ (s.attended / s.total * 100)|round }}%;background:{% if all_done %}var(--success){% else %}var(--danger){% endif %};"></div>
+        </div>
+        <div style="font-size:.78rem;color:var(--text-dim);margin-top:4px;text-align:center;">
+            {% if all_done %}✅ Všichni zapsáni{% else %}⏳ {{ s.total - s.attended }} z {{ s.total }} nezapsáno{% endif %}
         </div>
         {% endif %}
         <div class="group-actions">
