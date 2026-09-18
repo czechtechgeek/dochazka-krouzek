@@ -49,9 +49,16 @@
     {% if subgroup %}<p style="font-size:.78rem;font-weight:600;color:var(--text-dim);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.04em;">{{ subgroup }}</p>{% endif %}
     <ul class="children-list">
         {% for c in children %}
-        <li>
-            <span>{{ c.name }}</span>
-            <div style="display:flex;gap:4px;">
+        <li style="flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;flex:1;">
+                <span>{{ c.name }}</span>
+                {% if c.note %}<span style="font-size:.72rem;color:var(--warn);background:var(--warn-bg);padding:2px 8px;border-radius:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ c.note }}">📌 {{ c.note }}</span>{% endif %}
+            </div>
+            <div style="display:flex;gap:4px;align-items:center;">
+                <form method="post" action="{{ url_for('child_note', child_id=c.id) }}" style="display:flex;gap:4px;align-items:center;">
+                    <input type="text" name="note" value="{{ c.note or '' }}" placeholder="Poznámka" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:.78rem;width:110px;background:var(--bg);">
+                    <button class="btn btn-outline btn-sm" style="font-size:.7rem;padding:4px 8px;">💾</button>
+                </form>
                 <a href="{{ url_for('stats_detail', child_id=c.id) }}" class="btn btn-outline btn-sm" style="font-size:.75rem;">📊</a>
                 <form method="post" action="{{ url_for('delete_child', child_id=c.id) }}" onsubmit="return confirm('Smazat {{ c.name }}?')">
                     <button class="btn btn-danger btn-sm">🗑️</button>

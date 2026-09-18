@@ -35,7 +35,7 @@
         {% endif %}
         {% for child in subgroup_children %}
         <div class="attendance-row" data-child-id="{{ child.id }}">
-            <span class="child-name">{{ child.name }}</span>
+            <span class="child-name">{{ child.name }}{% if child.note %}&nbsp;<span style="font-size:.6rem;color:var(--warn);cursor:help;" title="{{ child.note }}">📌</span>{% endif %}</span>
             <div class="status-buttons">
                 {% set cur = records.get(child.id, 'none') %}
                 <button type="submit" name="child_{{ child.id }}" value="present"

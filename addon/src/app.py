@@ -58,6 +58,10 @@ with app.app_context():
             with db.engine.connect() as conn:
                 conn.execute(sa.text('ALTER TABLE children ADD COLUMN subgroup VARCHAR(100)'))
                 conn.commit()
+        if 'note' not in cols:
+            with db.engine.connect() as conn:
+                conn.execute(sa.text('ALTER TABLE children ADD COLUMN note VARCHAR(500)'))
+                conn.commit()
     except Exception:
         pass  # table might not exist yet
 
@@ -151,6 +155,14 @@ def delete_child(child_id):
     db.session.delete(child)
     db.session.commit()
     flash(f'Dítě odstraněno', 'success')
+    return redirect(url_for('manage'))
+
+@app.route('/manage/child/note/<int:child_id>', methods=['POST'])
+def child_note(child_id):
+    child = Child.query.get_or_404(child_id)
+    note = request.form.get('note', '').strip()
+    child.note = note if note else None
+    db.session.commit()
     return redirect(url_for('manage'))
 
 @app.route('/group/add', methods=['POST'])

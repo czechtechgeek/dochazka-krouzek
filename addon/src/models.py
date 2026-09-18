@@ -20,6 +20,7 @@ class Child(db.Model):
     name = db.Column(db.String(100), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id'), nullable=False)
     subgroup = db.Column(db.String(100), nullable=True, default=None)
+    note = db.Column(db.String(500), nullable=True, default=None)
 
     def __repr__(self):
         return self.name
