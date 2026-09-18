@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.11 (2025-09-18)
+
+- Hlavní přehled: počet omluvených (📝)
+- Progress bar: attended/total
+- Červený rámeček ⏳ / zelený ✅ podle stavu zápisu
+
 ## 1.0.10 (2025-09-18)
 
 - Poznámky u dětí (manage + 📌 indikátor v docházce)
